@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 名古屋・高山 行程</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #1a1a2e;
+    --gold: #c9a84c;
+    --gold-light: rgba(201,168,76,0.15);
+    --gold-border: rgba(201,168,76,0.4);
+    --changed: #7d2d00;
+    --changed-accent: #ff8a50;
+    --dot-b: #e91e63;
+    --dot-l: #ff6f00;
+    --dot-d: #b71c1c;
+    --dot-s: #0d47a1;
+    --dot-m: #1b5e20;
+    --dot-h: #4a148c;
+    --dot-f: #888;
+    --bg: #f8f6f1;
+    --card: #fff;
+    --text: #1a1a1a;
+    --text2: #555;
+    --text3: #999;
+    --border: rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px 12px 40px; }
+
+  /* Hero */
+  .hero {
+    background: var(--navy);
+    border-radius: 20px;
+    padding: 28px 20px 20px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.12);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.08);
+  }
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 10px;
+    font-family: 'Noto Serif TC', serif;
+  }
+  .hero-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    background: var(--gold-light);
+    border: 1px solid var(--gold-border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  /* Alert */
+  .alert {
+    background: #fff8e1;
+    border: 1px solid #f0c040;
+    border-left: 4px solid #f0ad4e;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #5d3a00;
+    line-height: 1.6;
+  }
+  .alert strong { font-size: 13px; display: block; margin-bottom: 4px; }
+
+  /* Nav */
+  .day-nav {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+  }
+  .day-nav::-webkit-scrollbar { display: none; }
+  .dnav {
+    flex-shrink: 0;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    text-align: center;
+    min-width: 52px;
+    transition: all .2s;
+    line-height: 1.4;
+  }
+  .dnav:active { transform: scale(0.95); }
+  .dnav.active { background: var(--navy); border-color: var(--navy); color: var(--gold); }
+  .dnav.changed { border-color: #e65100; color: #e65100; }
+  .dnav.changed.active { background: #7d2d00; border-color: #7d2d00; color: #ffcc80; }
+
+  /* Day card */
+  .day-card { display: none; background: var(--card); border-radius: 18px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .day-card.show { display: block; }
+
+  .day-header {
+    background: var(--navy);
+    padding: 18px 18px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .day-header.changed { background: var(--changed); }
+  .day-num { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; margin-bottom: 4px; }
+  .day-name { font-family: 'Noto Serif TC', serif; font-size: 20px; font-weight: 600; color: #fff; line-height: 1.2; }
+  .day-type { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .day-badge {
+    flex-shrink: 0;
+    background: var(--gold-light);
+    border: 1px solid var(--gold-border);
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-size: 11px;
+    color: var(--gold);
+    line-height: 1.6;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .day-badge.warn {
+    background: rgba(255,138,80,0.12);
+    border-color: rgba(255,138,80,0.4);
+    color: var(--changed-accent);
+  }
+
+  .info-row {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .pill {
+    font-size: 11px;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .pill-t { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; }
+  .pill-h { background: #f3e5f5; color: #4a148c; border: 1px solid #ce93d8; }
+  .pill-w { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+
+  /* Timeline */
+  .timeline { padding: 14px; }
+  .t-item { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+  .t-item:last-child { margin-bottom: 0; }
+  .t-time { font-size: 10px; color: var(--text3); min-width: 44px; padding-top: 3px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .t-spine { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+  .t-line { width: 1.5px; background: var(--border); flex: 1; min-height: 18px; margin-top: 3px; }
+  .t-body { flex: 1; padding-bottom: 2px; }
+  .t-cat { font-size: 10px; font-weight: 500; letter-spacing: .5px; margin-bottom: 2px; }
+  .t-main { font-size: 14px; color: var(--text); line-height: 1.5; }
+  .t-sub { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+  .badge-booked { display: inline-block; background: #fff8e1; color: #e65100; border: 1px solid #ffcc80; border-radius: 4px; font-size: 10px; padding: 1px 7px; margin-top: 4px; font-weight: 500; }
+  .badge-new { display: inline-block; background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; border-radius: 4px; font-size: 10px; padding: 1px 7px; margin-top: 4px; font-weight: 500; }
+
+  .cat-b .t-dot { background: var(--dot-b); } .cat-b .t-cat { color: #c2185b; }
+  .cat-l .t-dot { background: var(--dot-l); } .cat-l .t-cat { color: #bf360c; }
+  .cat-d .t-dot { background: var(--dot-d); } .cat-d .t-cat { color: #b71c1c; }
+  .cat-s .t-dot { background: var(--dot-s); } .cat-s .t-cat { color: #1565c0; }
+  .cat-m .t-dot { background: var(--dot-m); } .cat-m .t-cat { color: #2e7d32; }
+  .cat-h .t-dot { background: var(--dot-h); } .cat-h .t-cat { color: #6a1b9a; }
+  .cat-f .t-dot { background: var(--dot-f); } .cat-f .t-cat { color: #666; }
+
+  /* Section blocks */
+  .section {
+    margin-top: 14px;
+    background: var(--card);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .section-hd {
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    background: #fafaf8;
+  }
+
+  .booked-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px 14px; }
+  .bk-card { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 12px; padding: 10px 12px; }
+  .bk-place { font-size: 10px; color: #2e7d32; font-weight: 500; margin-bottom: 3px; letter-spacing: .5px; }
+  .bk-name { font-size: 13px; color: #1b5e20; font-weight: 500; line-height: 1.4; }
+  .bk-cancel { background: #fff3e0; border-color: #ffcc80; }
+  .bk-cancel .bk-place { color: #e65100; }
+  .bk-cancel .bk-name { color: #bf360c; text-decoration: line-through; }
+
+  .tr-list { padding: 2px 14px 10px; }
+  .tr-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .tr-row:last-child { border-bottom: none; }
+  .tr-from { color: var(--text2); }
+  .tr-cost { color: #0d47a1; font-weight: 500; }
+  .tr-new { color: #2e7d32; font-weight: 500; }
+  .tr-cancel { color: var(--text3); text-decoration: line-through; }
+  .tr-del { color: #b71c1c; font-size: 11px; }
+  .tr-warn { color: #e65100; font-weight: 500; }
+
+  .pending-list { padding: 4px 14px 12px; }
+  .pending-item {
+    display: flex;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+  .pending-item:last-child { border-bottom: none; }
+  .pdot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 6px; }
+
+  /* Legend */
+  .legend {
+    margin-top: 14px;
+    background: var(--card);
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .legend-title { font-size: 11px; color: var(--text3); letter-spacing: 1px; margin-bottom: 10px; }
+  .legend-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+  .ldot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 24px;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">JOURNEY 2026</div>
+    <div class="hero-title">名古屋・高山</div>
+    <div class="hero-tags">
+      <span class="tag">3/31 出發</span>
+      <span class="tag">4/6 返台</span>
+      <span class="tag">7天 6夜</span>
+      <span class="tag">7人同行</span>
+    </div>
+  </div>
+
+  <div class="alert">
+    <strong>JR 高山本線 部分停駛（2026/3/18 公告）</strong>
+    第2宮川橋りょう橋墩受損，杉原〜猪谷間即日起停駛，復駛時間未定。特急「ひだ」高山→富山段運休。D4 原定金澤行程已取消，改為高山延住＋飛驒古川。
+  </div>
+
+  <div class="day-nav">
+    <div class="dnav active" onclick="show(0)">D1<br><small>3/31</small></div>
+    <div class="dnav" onclick="show(1)">D2<br><small>4/1</small></div>
+    <div class="dnav" onclick="show(2)">D3<br><small>4/2</small></div>
+    <div class="dnav changed" onclick="show(3)">D4<br><small>4/3</small></div>
+    <div class="dnav changed" onclick="show(4)">D5<br><small>4/4</small></div>
+    <div class="dnav" onclick="show(5)">D6<br><small>4/5</small></div>
+    <div class="dnav" onclick="show(6)">D7<br><small>4/6</small></div>
+  </div>
+
+  <!-- D1 -->
+  <div class="day-card show" id="d0">
+    <div class="day-header">
+      <div><div class="day-num">DAY 1 · 二</div><div class="day-name">名古屋</div><div class="day-type">抵達日</div></div>
+      <div class="day-badge">5:45 降落<br>21:05 璿哥到</div>
+    </div>
+    <div class="info-row">
+      <span class="pill pill-t">機場→市區 980円</span>
+      <span class="pill pill-h">住宿：名古屋</span>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-f"><div class="t-time">9:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早上</div><div class="t-main">機場吃點小東西・等待入境</div></div></div>
+      <div class="t-item cat-s"><div class="t-time">10:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">景點</div><div class="t-main">清州城</div></div></div>
+      <div class="t-item cat-b"><div class="t-time">11:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐</div><div class="t-main">つばめ</div></div></div>
+      <div class="t-item cat-s"><div class="t-time">12:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">下午</div><div class="t-main">樂高樂園（金城埠頭站）</div><div class="t-sub">10:00–17:00・午餐在樂園解決</div></div></div>
+      <div class="t-item cat-f"><div class="t-time">17:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">傍晚</div><div class="t-main">放行李・市區晃晃</div></div></div>
+      <div class="t-item cat-d"><div class="t-time">19:00</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">晚餐</div><div class="t-main">塚ちゃん餃子（豬舌）</div></div></div>
+    </div>
+  </div>
+
+  <!-- D2 -->
+  <div class="day-card" id="d1">
+    <div class="day-header">
+      <div><div class="day-num">DAY 2 · 三</div><div class="day-name">名古屋 → 高山</div><div class="day-type">移動日</div></div>
+      <div class="day-badge">叔叔阿姨<br>11:20 抵達</div>
+    </div>
+    <div class="info-row">
+      <span class="pill pill-t">濃飛巴士 3600円</span>
+      <span class="pill pill-h">住宿：高山</span>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-b"><div class="t-time">9:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐</div><div class="t-main">吃早餐＆咖啡</div><div class="t-sub">市區逛街或景點</div></div></div>
+      <div class="t-item cat-m"><div class="t-time">11:20</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">接機</div><div class="t-main">叔叔阿姨抵達名古屋機場</div></div></div>
+      <div class="t-item cat-l"><div class="t-time">13:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">午餐</div><div class="t-main">等兩老到吃午餐</div></div></div>
+      <div class="t-item cat-m"><div class="t-time">14:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">出發高山</div><div class="t-main">濃飛巴士前往高山</div><div class="t-sub">16:45→19:20 或 17:45→20:20</div></div></div>
+      <div class="t-item cat-h"><div class="t-time">19:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">抵達</div><div class="t-main">飯店 Check In</div></div></div>
+      <div class="t-item cat-d"><div class="t-time">19:30</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">晚餐</div><div class="t-main">高山屋台橫丁</div><div class="t-sub">步行約 8 分鐘</div></div></div>
+    </div>
+  </div>
+
+  <!-- D3 -->
+  <div class="day-card" id="d2">
+    <div class="day-header">
+      <div><div class="day-num">DAY 3 · 四</div><div class="day-name">高山</div><div class="day-type">探索日</div></div>
+    </div>
+    <div class="info-row">
+      <span class="pill pill-h">住宿：高山</span>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-b"><div class="t-time">9:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐／朝市</div><div class="t-main">宮川朝市</div><div class="t-sub">飯店步行 7 分鐘</div></div></div>
+      <div class="t-item cat-f"><div class="t-time">10:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">上午</div><div class="t-main">吃吃喝喝・逛老街</div></div></div>
+      <div class="t-item cat-l"><div class="t-time">12:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">午餐</div><div class="t-main">Hida beef 壽喜燒</div><div><span class="badge-booked">已訂位</span></div></div></div>
+      <div class="t-item cat-s"><div class="t-time">14:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">下午景點</div><div class="t-main">飛騨高山復古博物館</div><div class="t-sub">10:00–17:00</div></div></div>
+      <div class="t-item cat-s"><div class="t-time">15:30</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">繼續逛</div><div class="t-main">舩坂酒造店・高山陣屋</div><div class="t-sub">8:30–18:00 ／ 8:45–16:30</div></div></div>
+      <div class="t-item cat-d"><div class="t-time">18:00</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">晚餐</div><div class="t-main">高山烤肉</div><div><span class="badge-booked">已訂位</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- D4 改版 -->
+  <div class="day-card" id="d3">
+    <div class="day-header changed">
+      <div><div class="day-num">DAY 4 · 五　已調整</div><div class="day-name">高山＋飛驒古川</div><div class="day-type">延住・輕旅行</div></div>
+      <div class="day-badge warn">原定金澤<br>已取消</div>
+    </div>
+    <div class="info-row">
+      <span class="pill pill-w">請確認飯店延住</span>
+      <span class="pill pill-h">住宿：高山（延住）</span>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-b"><div class="t-time">9:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐／朝市</div><div class="t-main">宮川朝市 第二天</div><div class="t-sub">飛驒蕎麥麵 小舟（僅週五 11:00–14:00）</div></div></div>
+      <div class="t-item cat-m"><div class="t-time">10:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">出發古川</div><div class="t-main">JR 高山→飛驒古川</div><div class="t-sub">約 15 分鐘・行李留飯店，輕裝出發</div><div><span class="badge-new">新增</span></div></div></div>
+      <div class="t-item cat-s"><div class="t-time">10:30</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">景點</div><div class="t-main">飛驒古川老街漫步</div><div class="t-sub">白壁土蔵街・瀬戸川錦鯉・三嶋和蠟燭店</div><div><span class="badge-new">新增</span></div></div></div>
+      <div class="t-item cat-l"><div class="t-time">12:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">午餐</div><div class="t-main">古川在地食堂</div><div class="t-sub">古川屋・或飛驒蕎麥麵</div><div><span class="badge-new">新增</span></div></div></div>
+      <div class="t-item cat-m"><div class="t-time">14:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">返回高山</div><div class="t-main">JR 飛驒古川→高山</div><div class="t-sub">約 15 分鐘</div></div></div>
+      <div class="t-item cat-f"><div class="t-time">14:30</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">下午自由</div><div class="t-main">補逛高山待排清單</div><div class="t-sub">SNOOPY茶屋・茶乃芽・五平餅・坂口屋</div></div></div>
+      <div class="t-item cat-d"><div class="t-time">18:00</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">晚餐</div><div class="t-main">飛驒牛烤肉 or 關東煮</div><div class="t-sub">みひろ 關東煮（18:00–3:00）</div></div></div>
+    </div>
+  </div>
+
+  <!-- D5 改版 -->
+  <div class="day-card" id="d4">
+    <div class="day-header changed">
+      <div><div class="day-num">DAY 5 · 六　已調整</div><div class="day-name">高山 → 名古屋</div><div class="day-type">移動日</div></div>
+      <div class="day-badge warn">路線更改</div>
+    </div>
+    <div class="info-row">
+      <span class="pill pill-t">濃飛巴士 3600円</span>
+      <span class="pill pill-h">住宿：名古屋</span>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-b"><div class="t-time">9:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐</div><div class="t-main">飯店早餐 or 咖啡廳</div><div class="t-sub">Falò Coffee Brewers（8:00–16:30）</div></div></div>
+      <div class="t-item cat-f"><div class="t-time">10:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">最後採購</div><div class="t-main">高山最後衝刺</div><div class="t-sub">六拾番牛串・味藏天國・飛驒牛飯 匠家</div></div></div>
+      <div class="t-item cat-m"><div class="t-time">午後</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">搭車</div><div class="t-main">濃飛巴士 高山→名古屋</div><div class="t-sub">約 2.5 小時・需事先預約（7人）</div></div></div>
+      <div class="t-item cat-h"><div class="t-time">傍晚</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">抵達名古屋</div><div class="t-main">飯店 Check In</div></div></div>
+      <div class="t-item cat-d"><div class="t-time">晚上</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">晚餐</div><div class="t-main">鰻魚飯 or 手羽先</div></div></div>
+    </div>
+  </div>
+
+  <!-- D6 -->
+  <div class="day-card" id="d5">
+    <div class="day-header">
+      <div><div class="day-num">DAY 6 · 日</div><div class="day-name">名古屋</div><div class="day-type">自由日</div></div>
+    </div>
+    <div class="info-row">
+      <span class="pill pill-h">住宿：名古屋</span>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-b"><div class="t-time">早上</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐</div><div class="t-main">飯店早餐？或咖啡廳</div></div></div>
+      <div class="t-item cat-f"><div class="t-time">10:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">上午</div><div class="t-main">咖啡廳・逛街</div></div></div>
+      <div class="t-item cat-l"><div class="t-time">12:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">午餐</div><div class="t-main">鰻魚飯</div></div></div>
+      <div class="t-item cat-s"><div class="t-time">13:00</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">下午</div><div class="t-main">大須商店街 自由逛逛</div><div class="t-sub">或前往常滑</div></div></div>
+      <div class="t-item cat-d"><div class="t-time">19:00</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">晚餐</div><div class="t-main">手羽先</div><div class="t-sub">晚上去唐吉軻德買藥妝・綠洲21酒吧？</div></div></div>
+    </div>
+  </div>
+
+  <!-- D7 -->
+  <div class="day-card" id="d6">
+    <div class="day-header">
+      <div><div class="day-num">DAY 7 · 一</div><div class="day-name">名古屋</div><div class="day-type">返程日</div></div>
+      <div class="day-badge">22:45 起飛<br>返台</div>
+    </div>
+    <div class="timeline">
+      <div class="t-item cat-b"><div class="t-time">上午</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">早餐</div><div class="t-main">吐司早餐・自由活動</div></div></div>
+      <div class="t-item cat-f"><div class="t-time">下午</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">午後</div><div class="t-main">自由活動・最後採購</div></div></div>
+      <div class="t-item cat-m"><div class="t-time">20:45</div><div class="t-spine"><div class="t-dot"></div><div class="t-line"></div></div><div class="t-body"><div class="t-cat">前往機場</div><div class="t-main">抵達機場・辦理登機</div></div></div>
+      <div class="t-item cat-m"><div class="t-time">22:45</div><div class="t-spine"><div class="t-dot"></div></div><div class="t-body"><div class="t-cat">返程</div><div class="t-main">起飛，返台</div></div></div>
+    </div>
+  </div>
+
+  <!-- Booked -->
+  <div class="section">
+    <div class="section-hd">已訂位餐廳</div>
+    <div class="booked-grid">
+      <div class="bk-card"><div class="bk-place">高山・D3</div><div class="bk-name">高山壽喜燒</div></div>
+      <div class="bk-card"><div class="bk-place">高山・D3</div><div class="bk-name">高山烤肉</div></div>
+      <div class="bk-card bk-cancel" style="grid-column:1/-1"><div class="bk-place">金澤・已取消</div><div class="bk-name">Itaru（黑喉魚釜飯）</div></div>
+    </div>
+  </div>
+
+  <!-- Transport -->
+  <div class="section">
+    <div class="section-hd">交通票券（更新後）</div>
+    <div class="tr-list">
+      <div class="tr-row"><span class="tr-from">機場 → 市區</span><span class="tr-cost">980円</span></div>
+      <div class="tr-row"><span class="tr-from">名古屋 → 高山（巴士）</span><span class="tr-cost">3600円</span></div>
+      <div class="tr-row"><span class="tr-from">高山 ↔ 飛驒古川（JR 往返）</span><span class="tr-new">新・約 700円</span></div>
+      <div class="tr-row"><span class="tr-from">高山 → 名古屋（巴士）</span><span class="tr-new">新・3600円</span></div>
+      <div class="tr-row"><span class="tr-cancel">高山 → 金澤 JR 5710円</span><span class="tr-del">已取消</span></div>
+      <div class="tr-row"><span class="tr-cancel">金澤 → 名古屋 JR 9750円</span><span class="tr-del">已取消</span></div>
+      <div class="tr-row"><span class="tr-from" style="color:#e65100;font-weight:500">是否購買周遊券？</span><span class="tr-warn">待評估</span></div>
+    </div>
+  </div>
+
+  <!-- Pending -->
+  <div class="section">
+    <div class="section-hd">待排 / 備選（高山集中消化）</div>
+    <div class="pending-list">
+      <div class="pending-item"><div class="pdot"></div><span>飛驒特牛壽司專賣店・坂口屋（牛壽司）・六拾番牛串</span></div>
+      <div class="pending-item"><div class="pdot"></div><span>飛驒牛烤肉・飛驒牛飯 匠家・焼肉家昇家 朝日町店</span></div>
+      <div class="pending-item"><div class="pdot"></div><span>SNOOPY茶屋・茶乃芽（抹茶鯛魚燒）・五平餅・布丁・可頌</span></div>
+      <div class="pending-item"><div class="pdot"></div><span>Pessoa Coffee Roasters（百年咖啡）・Falò Coffee Brewers（8:00–16:30）</span></div>
+      <div class="pending-item"><div class="pdot"></div><span>味藏天國・Go Go Curry・古川屋（飛驒古川）</span></div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-title">圖例</div>
+    <div class="legend-grid">
+      <div class="legend-item"><div class="ldot" style="background:#e91e63"></div>早餐</div>
+      <div class="legend-item"><div class="ldot" style="background:#ff6f00"></div>午餐</div>
+      <div class="legend-item"><div class="ldot" style="background:#b71c1c"></div>晚餐</div>
+      <div class="legend-item"><div class="ldot" style="background:#0d47a1"></div>景點</div>
+      <div class="legend-item"><div class="ldot" style="background:#1b5e20"></div>移動</div>
+      <div class="legend-item"><div class="ldot" style="background:#4a148c"></div>住宿</div>
+      <div class="legend-item"><div class="ldot" style="background:#888"></div>自由</div>
+    </div>
+  </div>
+
+  <div class="footer">2026 · 名古屋・高山 · 7人同行</div>
+</div>
+
+<!-- MAP PAGE -->
+<div id="map-page" style="display:none; max-width:480px; margin:0 auto; padding:16px 12px 40px;">
+  <div class="hero" style="margin-bottom:14px;">
+    <div class="hero-eyebrow">ROUTE MAP</div>
+    <div class="hero-title" style="font-size:20px;">行程路線圖</div>
+    <div class="hero-tags">
+      <span class="tag">名古屋</span>
+      <span class="tag">高山</span>
+      <span class="tag">飛驒古川</span>
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:14px;">
+    <div id="leaflet-map" style="height:420px;width:100%;"></div>
+  </div>
+
+  <!-- Legend -->
+  <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:14px;">
+    <div style="font-size:11px;color:#999;letter-spacing:1px;margin-bottom:10px;">地點說明</div>
+    <div id="place-list"></div>
+  </div>
+
+  <div class="footer">點地圖上的標記可查看地點資訊</div>
+</div>
+
+<!-- Bottom tab bar -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid rgba(0,0,0,0.08);display:flex;z-index:1000;max-width:480px;margin:0 auto;">
+  <button id="tab-itinerary" onclick="switchTab('itinerary')" style="flex:1;padding:12px 0;background:none;border:none;font-size:12px;font-family:inherit;cursor:pointer;color:#1a1a2e;font-weight:500;border-top:2px solid #1a1a2e;">
+    📋 行程
+  </button>
+  <button id="tab-map" onclick="switchTab('map')" style="flex:1;padding:12px 0;background:none;border:none;font-size:12px;font-family:inherit;cursor:pointer;color:#999;border-top:2px solid transparent;">
+    🗺 地圖
+  </button>
+</div>
+<div style="height:50px;"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var mapInitialized = false;
+
+var places = [
+  { name:'清州城', lat:35.2166, lng:136.8436, day:'D1', color:'#0d47a1', note:'上午景點・9:00–10:30' },
+  { name:'樂高樂園', lat:35.0506, lng:136.8438, day:'D1', color:'#0d47a1', note:'下午・10:00–17:00' },
+  { name:'名古屋', lat:35.1709, lng:136.8815, day:'D1–2・D5–7', color:'#1a1a2e', note:'出發／返回據點' },
+  { name:'高山', lat:36.1411, lng:137.2514, day:'D2–5', color:'#c9a84c', note:'主要旅遊據點 3晚' },
+  { name:'宮川朝市', lat:36.1447, lng:137.2579, day:'D3・D4', color:'#e91e63', note:'早餐朝市・7:00–12:00' },
+  { name:'飛驒民俗村', lat:36.1325, lng:137.2351, day:'D3', color:'#0d47a1', note:'復古博物館 10:00–17:00' },
+  { name:'飛驒古川', lat:36.2367, lng:137.1896, day:'D4', color:'#ff6f00', note:'當天來回小旅行・JR 15分' },
+];
+
+var routeCoords = [
+  [35.1709, 136.8815],
+  [35.2166, 136.8436],
+  [35.0506, 136.8438],
+  [35.1709, 136.8815],
+  [36.1411, 137.2514],
+  [36.2367, 137.1896],
+  [36.1411, 137.2514],
+  [35.1709, 136.8815],
+];
+
+function initMap() {
+  if (mapInitialized) return;
+  mapInitialized = true;
+  var map = L.map('leaflet-map').setView([35.8, 137.05], 8);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 17
+  }).addTo(map);
+
+  // Route line
+  L.polyline(routeCoords, {color:'#c9a84c', weight:2.5, opacity:0.7, dashArray:'6,5'}).addTo(map);
+
+  // Markers
+  places.forEach(function(p) {
+    var icon = L.divIcon({
+      className: '',
+      html: '<div style="width:28px;height:28px;border-radius:50%;background:' + p.color + ';border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:600;">' + p.day.charAt(0) + p.day.charAt(1) + '</div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+      popupAnchor: [0, -16]
+    });
+    L.marker([p.lat, p.lng], {icon: icon})
+      .addTo(map)
+      .bindPopup('<div style="font-family:sans-serif;min-width:120px;"><div style="font-weight:600;font-size:13px;margin-bottom:4px;">' + p.name + '</div><div style="font-size:11px;color:#e65100;margin-bottom:2px;">' + p.day + '</div><div style="font-size:11px;color:#555;">' + p.note + '</div></div>');
+  });
+
+  // Place list
+  var list = document.getElementById('place-list');
+  places.forEach(function(p) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:13px;';
+    row.innerHTML = '<div style="width:10px;height:10px;border-radius:50%;background:' + p.color + ';flex-shrink:0;"></div><div><span style="font-weight:500;">' + p.name + '</span><span style="color:#999;font-size:11px;margin-left:6px;">' + p.day + '</span><div style="font-size:11px;color:#666;margin-top:1px;">' + p.note + '</div></div>';
+    list.appendChild(row);
+  });
+}
+
+function switchTab(tab) {
+  var itinPage = document.querySelector('.wrap');
+  var mapPage = document.getElementById('map-page');
+  var tabIt = document.getElementById('tab-itinerary');
+  var tabMap = document.getElementById('tab-map');
+  if (tab === 'map') {
+    itinPage.style.display = 'none';
+    mapPage.style.display = 'block';
+    tabIt.style.color = '#999'; tabIt.style.borderTopColor = 'transparent';
+    tabMap.style.color = '#1a1a2e'; tabMap.style.borderTopColor = '#1a1a2e';
+    window.scrollTo({top:0});
+    setTimeout(initMap, 100);
+  } else {
+    itinPage.style.display = 'block';
+    mapPage.style.display = 'none';
+    tabIt.style.color = '#1a1a2e'; tabIt.style.borderTopColor = '#1a1a2e';
+    tabMap.style.color = '#999'; tabMap.style.borderTopColor = 'transparent';
+    window.scrollTo({top:0});
+  }
+}
+
+function show(i) {
+  document.querySelectorAll('.day-card').forEach((c,j) => c.classList.toggle('show', j===i));
+  document.querySelectorAll('.dnav').forEach((n,j) => n.classList.toggle('active', j===i));
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
